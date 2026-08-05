@@ -45,7 +45,7 @@ export function Navigation() {
                 href={item.href}
                 className={`flex flex-col items-center justify-center flex-1 h-full px-2 text-xs font-medium transition-colors ${
                   isActive
-                    ? "text-[#18181B] dark:text-[#F4F4F5] font-bold"
+                    ? "text-[#18181B] dark:text-[#F4F4F5] font-semibold"
                     : "text-[#706E6B] dark:text-[#A1A1AA] hover:text-[#1A1A1A] dark:hover:text-[#F4F4F5]"
                 }`}
               >
@@ -67,15 +67,15 @@ export function Navigation() {
           {/* Brand Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#18181B] dark:bg-[#F4F4F5] text-white dark:text-[#121212] flex items-center justify-center font-serif text-lg font-bold">
+              <div className="w-9 h-9 rounded-xl bg-[#18181B] dark:bg-[#F4F4F5] text-white dark:text-[#121212] flex items-center justify-center font-bold text-lg">
                 M
               </div>
               <div>
-                <h1 className="font-serif text-lg font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight leading-none">
+                <h1 className="text-lg font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5] leading-none">
                   Money Tracker
                 </h1>
                 <span className="text-[10px] tracking-widest uppercase font-semibold text-[#706E6B] dark:text-[#A1A1AA]">
-                  Warm Minimalist
+                  Business Minimalist
                 </span>
               </div>
             </div>

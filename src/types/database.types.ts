@@ -58,6 +58,7 @@ export type Database = {
           amount: number;
           category: string;
           account_type: "Cash" | "Bank";
+          description: string | null;
           date: string;
           created_at: string;
         };
@@ -67,6 +68,7 @@ export type Database = {
           amount: number;
           category: string;
           account_type?: "Cash" | "Bank";
+          description?: string | null;
           date?: string;
           created_at?: string;
         };
@@ -76,6 +78,7 @@ export type Database = {
           amount?: number;
           category?: string;
           account_type?: "Cash" | "Bank";
+          description?: string | null;
           date?: string;
           created_at?: string;
         };

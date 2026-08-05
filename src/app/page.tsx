@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   Wallet,
   Building2,
+  FileText,
 } from "lucide-react";
 import { ExpenseDashboardCharts } from "@/components/ExpenseDashboardCharts";
 import { AccountSummaryCard } from "@/components/AccountSummaryCard";
@@ -27,6 +28,7 @@ interface PersonalExpense {
   amount: number;
   category: string;
   account_type?: "Cash" | "Bank";
+  description?: string | null;
   date: string;
   created_at: string;
 }
@@ -55,6 +57,7 @@ export default function HomePage() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Food & Dining");
   const [accountType, setAccountType] = useState<"Cash" | "Bank">("Bank");
+  const [description, setDescription] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -135,6 +138,7 @@ export default function HomePage() {
         amount: parsedAmount,
         category,
         account_type: accountType,
+        description: description.trim() || null,
         date,
       })
       .select()
@@ -147,6 +151,7 @@ export default function HomePage() {
       setAmount("");
       setCategory("Food & Dining");
       setAccountType("Bank");
+      setDescription("");
       setDate(new Date().toISOString().split("T")[0]);
       setIsModalOpen(false);
     }
@@ -178,7 +183,7 @@ export default function HomePage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Feature Widget: Account Balances */}
       <AccountSummaryCard netOwedToMe={netOwedToMe} netIOwe={netIOwe} />
 
@@ -189,22 +194,22 @@ export default function HomePage() {
             <span className="text-xs font-semibold uppercase tracking-widest text-[#706E6B] dark:text-[#A1A1AA]">
               Total Spent This Month
             </span>
-            <p className="font-serif text-3xl md:text-4xl font-bold tracking-tight tabular-nums mt-1 text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <p className="text-3xl md:text-4xl font-semibold tracking-tight tabular-nums mt-1 text-[#1A1A1A] dark:text-[#F4F4F5]">
               ₹{totalSpentThisMonth.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] text-sm font-medium transition-all shadow-xs min-h-[44px]"
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] text-sm font-semibold transition-all shadow-xs min-h-[44px]"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Expense</span>
           </button>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-[#EAE8E3]/80 dark:border-[#2D2D2D]/80 flex items-center justify-between text-xs text-[#706E6B] dark:text-[#A1A1AA]">
+        <div className="mt-6 pt-4 border-t border-[#EAE8E3]/80 dark:border-[#2D2D2D]/80 flex items-center justify-between text-sm font-medium text-[#706E6B] dark:text-[#A1A1AA]">
           <span>All-time total spending:</span>
-          <span className="font-bold tabular-nums text-[#1A1A1A] dark:text-[#F4F4F5]">
+          <span className="font-semibold tabular-nums text-[#1A1A1A] dark:text-[#F4F4F5]">
             ₹{totalSpentOverall.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
@@ -216,7 +221,7 @@ export default function HomePage() {
       {/* Expense List Section */}
       <div className="p-6 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-serif text-xl font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+          <h3 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
             Recent Ledger Transactions
           </h3>
           <span className="text-xs text-[#706E6B] dark:text-[#A1A1AA] tabular-nums font-medium">
@@ -231,10 +236,10 @@ export default function HomePage() {
         ) : expenses.length === 0 ? (
           <div className="text-center py-10 px-4 rounded-xl border border-dashed border-[#EAE8E3] dark:border-[#2D2D2D]">
             <ShoppingBag className="w-8 h-8 mx-auto text-[#706E6B] dark:text-[#A1A1AA] mb-2 opacity-60" />
-            <p className="font-serif text-base font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <p className="text-base font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
               No expenses recorded yet
             </p>
-            <p className="text-xs text-[#706E6B] dark:text-[#A1A1AA] mt-1">
+            <p className="text-sm font-medium text-[#706E6B] dark:text-[#A1A1AA] mt-1">
               Tap "+ Add Expense" to begin tracking your ledger.
             </p>
           </div>
@@ -265,15 +270,23 @@ export default function HomePage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#706E6B] dark:text-[#A1A1AA] flex items-center gap-1 mt-0.5">
+                      
+                      {/* Description display */}
+                      {expense.description && (
+                        <p className="text-xs font-normal text-[#706E6B] dark:text-[#A1A1AA] truncate mt-0.5">
+                          {expense.description}
+                        </p>
+                      )}
+
+                      <p className="text-xs font-medium text-[#706E6B] dark:text-[#A1A1AA] flex items-center gap-1 mt-0.5">
                         <Calendar className="w-3 h-3" />
-                        <span>{expense.date}</span>
+                        <span className="tabular-nums">{expense.date}</span>
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-base font-bold text-[#9E2A2B] dark:text-[#F87171] tabular-nums">
+                    <span className="text-base font-semibold text-[#9E2A2B] dark:text-[#F87171] tabular-nums">
                       -₹{Number(expense.amount).toFixed(2)}
                     </span>
                     <button
@@ -301,7 +314,7 @@ export default function HomePage() {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white dark:bg-[#1E1E1E] border border-[#EAE8E3] dark:border-[#2D2D2D] rounded-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#EAE8E3] dark:border-[#2D2D2D] pb-3">
-              <h3 className="font-serif text-xl font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+              <h3 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
                 Record Expense
               </h3>
               <button
@@ -313,7 +326,7 @@ export default function HomePage() {
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-[#9E2A2B] dark:text-[#F87171] text-xs">
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-[#9E2A2B] dark:text-[#F87171] text-xs font-medium">
                 {errorMsg}
               </div>
             )}
@@ -368,7 +381,7 @@ export default function HomePage() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-6 pr-2 py-3 text-xl font-bold bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
+                    className="w-full pl-6 pr-2 py-3 text-xl font-semibold bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
                   />
                 </div>
               </div>
@@ -383,7 +396,7 @@ export default function HomePage() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full pl-7 pr-2 py-3 text-sm bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
+                    className="w-full pl-7 pr-2 py-3 text-sm font-normal bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
                   >
                     {CATEGORIES.map((cat) => (
                       <option
@@ -395,6 +408,23 @@ export default function HomePage() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              {/* Description Field (NEW) */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#706E6B] dark:text-[#A1A1AA] mb-1">
+                  Description / Note (Optional)
+                </label>
+                <div className="relative">
+                  <FileText className="w-5 h-5 absolute left-0 top-3 text-[#706E6B] dark:text-[#A1A1AA]" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Starbucks with study group..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full pl-7 pr-2 py-3 text-sm font-normal bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
+                  />
                 </div>
               </div>
 
@@ -410,7 +440,7 @@ export default function HomePage() {
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full pl-7 pr-2 py-3 text-sm bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
+                    className="w-full pl-7 pr-2 py-3 text-sm font-normal bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
                   />
                 </div>
               </div>
@@ -426,7 +456,7 @@ export default function HomePage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 text-sm font-medium rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
+                  className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
                 >
                   {submitting ? (
                     <>

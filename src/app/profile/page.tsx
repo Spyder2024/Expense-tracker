@@ -46,23 +46,23 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2C3E35] dark:text-[#4A5D53]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#18181B] dark:text-[#F4F4F5]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="p-6 md:p-8 rounded-2xl border border-[#E5E4E0] dark:border-[#333330] bg-white dark:bg-[#252523]">
+    <div className="space-y-6 font-sans">
+      <div className="p-6 md:p-8 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E]">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#2C3E35]/10 dark:bg-[#4A5D53]/20 border border-[#2C3E35]/20 dark:border-[#4A5D53]/30 flex items-center justify-center text-[#2C3E35] dark:text-[#8C7A6B] font-serif font-bold text-xl">
+          <div className="w-14 h-14 rounded-full bg-[#18181B]/5 dark:bg-[#F4F4F5]/10 border border-[#EAE8E3] dark:border-[#2D2D2D] flex items-center justify-center text-[#18181B] dark:text-[#F4F4F5] font-semibold text-xl">
             {profile?.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h2 className="font-serif text-xl font-bold text-[#2C2A29] dark:text-[#EAE9E5]">
+            <h2 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
               {profile?.name}
             </h2>
-            <p className="text-xs text-[#666461] dark:text-[#A09E98] flex items-center gap-1 mt-0.5 font-medium">
+            <p className="text-xs text-[#706E6B] dark:text-[#A1A1AA] flex items-center gap-1 mt-0.5 font-medium">
               <Mail className="w-3.5 h-3.5" />
               {profile?.email}
             </p>
@@ -70,17 +70,17 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="p-6 md:p-8 rounded-2xl border border-[#E5E4E0] dark:border-[#333330] bg-white dark:bg-[#252523] space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-[#8C7A6B] dark:text-[#A09E98]">
+      <div className="p-6 md:p-8 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] space-y-4">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-[#706E6B] dark:text-[#A1A1AA]">
           Account & Security
         </h3>
 
-        <div className="flex items-center justify-between py-3 border-b border-[#E5E4E0]/80 dark:border-[#333330]/80 text-sm">
-          <span className="flex items-center gap-2.5 text-[#2C2A29] dark:text-[#EAE9E5] font-medium">
-            <Shield className="w-4 h-4 text-[#8C7A6B]" />
+        <div className="flex items-center justify-between py-3 border-b border-[#EAE8E3]/80 dark:border-[#2D2D2D]/80 text-sm">
+          <span className="flex items-center gap-2.5 text-[#1A1A1A] dark:text-[#F4F4F5] font-medium">
+            <Shield className="w-4 h-4 text-[#706E6B]" />
             Session Status
           </span>
-          <span className="text-xs font-bold text-[#556B2F] dark:text-[#7A9A43] uppercase tracking-wider">
+          <span className="text-xs font-semibold text-[#2E6F40] dark:text-[#4ADE80] uppercase tracking-wider">
             Authenticated
           </span>
         </div>
@@ -88,7 +88,7 @@ export default function ProfilePage() {
         <button
           onClick={handleSignOut}
           disabled={loggingOut}
-          className="w-full mt-3 py-3 px-4 rounded-xl text-sm font-medium border border-[#8B4513]/30 bg-[#8B4513]/5 dark:bg-[#C46D3B]/10 text-[#8B4513] dark:text-[#C46D3B] hover:bg-[#8B4513]/15 transition-all flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]"
+          className="w-full mt-3 py-3 px-4 rounded-xl text-sm font-semibold border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 text-[#9E2A2B] dark:text-[#F87171] hover:bg-rose-100 dark:hover:bg-rose-950/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]"
         >
           {loggingOut ? (
             <Loader2 className="w-4 h-4 animate-spin" />

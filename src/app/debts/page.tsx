@@ -239,16 +239,16 @@ export default function DebtsPage() {
     .reduce((sum, d) => sum + Number(d.amount), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Header & Stats summary */}
       <div className="p-6 md:p-8 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="font-serif text-2xl font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+          <h2 className="text-2xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
             Peer Ledger & Shared Debts
           </h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] text-sm font-medium transition-all shadow-xs min-h-[44px]"
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] text-sm font-semibold transition-all shadow-xs min-h-[44px]"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Debt Record</span>
@@ -261,7 +261,7 @@ export default function DebtsPage() {
               <ArrowDownLeft className="w-3.5 h-3.5" />
               Owed to Me
             </span>
-            <p className="font-serif text-2xl md:text-3xl font-bold tabular-nums mt-1 text-[#2E6F40] dark:text-[#4ADE80]">
+            <p className="text-2xl md:text-3xl font-semibold tracking-tight tabular-nums mt-1 text-[#2E6F40] dark:text-[#4ADE80]">
               +₹{totalOwedToMe.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </div>
@@ -271,7 +271,7 @@ export default function DebtsPage() {
               <ArrowUpRight className="w-3.5 h-3.5" />
               I Owe
             </span>
-            <p className="font-serif text-2xl md:text-3xl font-bold tabular-nums mt-1 text-[#9E2A2B] dark:text-[#F87171]">
+            <p className="text-2xl md:text-3xl font-semibold tracking-tight tabular-nums mt-1 text-[#9E2A2B] dark:text-[#F87171]">
               -₹{totalIOwe.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </div>
@@ -312,7 +312,7 @@ export default function DebtsPage() {
 
         {/* Show Settled Checkbox Filter */}
         <div className="flex items-center justify-end">
-          <label className="flex items-center gap-2 text-xs text-[#706E6B] dark:text-[#A1A1AA] cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs font-medium text-[#706E6B] dark:text-[#A1A1AA] cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showSettled}
@@ -331,10 +331,10 @@ export default function DebtsPage() {
         ) : filteredDebts.length === 0 ? (
           <div className="text-center py-10 px-4 rounded-xl border border-dashed border-[#EAE8E3] dark:border-[#2D2D2D]">
             <Clock className="w-8 h-8 mx-auto text-[#706E6B] dark:text-[#A1A1AA] mb-2 opacity-60" />
-            <p className="font-serif text-base font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <p className="text-base font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
               No {activeTab === "owed_to_me" ? "debts owed to you" : "debts you owe"}
             </p>
-            <p className="text-xs text-[#706E6B] dark:text-[#A1A1AA] mt-1">
+            <p className="text-sm font-medium text-[#706E6B] dark:text-[#A1A1AA] mt-1">
               Tap "+ Add Debt Record" to log a new peer transaction.
             </p>
           </div>
@@ -369,7 +369,7 @@ export default function DebtsPage() {
                       <p className="text-sm font-semibold text-[#1A1A1A] dark:text-[#F4F4F5] truncate">
                         {peer?.name || peer?.email || "Unknown Peer"}
                       </p>
-                      <p className="text-xs text-[#706E6B] dark:text-[#A1A1AA] truncate mt-0.5">
+                      <p className="text-xs font-normal text-[#706E6B] dark:text-[#A1A1AA] truncate mt-0.5">
                         {debt.description || (isLender ? "Borrowed from you" : "You borrowed")}
                       </p>
                     </div>
@@ -378,7 +378,7 @@ export default function DebtsPage() {
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right">
                       <p
-                        className={`text-base font-bold tabular-nums ${
+                        className={`text-base font-semibold tabular-nums ${
                           isSettled
                             ? "text-[#706E6B] dark:text-[#A1A1AA] line-through"
                             : isLender
@@ -435,7 +435,7 @@ export default function DebtsPage() {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white dark:bg-[#1E1E1E] border border-[#EAE8E3] dark:border-[#2D2D2D] rounded-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#EAE8E3] dark:border-[#2D2D2D] pb-3">
-              <h3 className="font-serif text-xl font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+              <h3 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
                 Log Peer Debt
               </h3>
               <button
@@ -450,7 +450,7 @@ export default function DebtsPage() {
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-[#9E2A2B] dark:text-[#F87171] text-xs">
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-[#9E2A2B] dark:text-[#F87171] text-xs font-medium">
                 {errorMsg}
               </div>
             )}
@@ -521,7 +521,7 @@ export default function DebtsPage() {
                       placeholder="Type peer's email address..."
                       value={userQuery}
                       onChange={(e) => handleSearchUsers(e.target.value)}
-                      className="w-full pl-7 pr-2 py-3 text-sm bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
+                      className="w-full pl-7 pr-2 py-3 text-sm font-normal bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
                     />
 
                     {searching && (
@@ -575,7 +575,7 @@ export default function DebtsPage() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-6 pr-2 py-3 text-xl font-bold bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
+                    className="w-full pl-6 pr-2 py-3 text-xl font-semibold bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] tabular-nums min-h-[44px]"
                   />
                 </div>
               </div>
@@ -592,7 +592,7 @@ export default function DebtsPage() {
                     placeholder="e.g. Dinner split, Course material..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full pl-7 pr-2 py-3 text-sm bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
+                    className="w-full pl-7 pr-2 py-3 text-sm font-normal bg-transparent border-b border-[#EAE8E3] dark:border-[#2D2D2D] focus:border-[#18181B] dark:focus:border-[#F4F4F5] focus:outline-hidden text-[#1A1A1A] dark:text-[#F4F4F5] min-h-[44px]"
                   />
                 </div>
               </div>
@@ -611,7 +611,7 @@ export default function DebtsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 text-sm font-medium rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
+                  className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#18181B] hover:bg-[#27272A] dark:bg-[#F4F4F5] dark:hover:bg-[#E4E4E7] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
                 >
                   {submitting ? (
                     <>

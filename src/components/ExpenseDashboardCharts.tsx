@@ -28,13 +28,13 @@ interface ExpenseDashboardChartsProps {
   expenses: PersonalExpense[];
 }
 
-const WARM_MINIMALIST_COLORS = [
+const BUSINESS_MINIMALIST_COLORS = [
   "#18181B", // Soft Obsidian
-  "#2E6F40", // Crisp Forest Olive
-  "#8C7A6B", // Warm Slate Ochre
-  "#9E2A2B", // Deep Muted Crimson
+  "#2E6F40", // Forest Olive
   "#706E6B", // Warm Gray
-  "#3F3F46", // Charcoal Accent
+  "#9E2A2B", // Deep Crimson
+  "#3F3F46", // Dark Zinc
+  "#A1A1AA", // Light Ash
 ];
 
 export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps) {
@@ -46,7 +46,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
 
   if (!mounted) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
         <div className="h-64 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] animate-pulse" />
         <div className="h-64 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] animate-pulse" />
       </div>
@@ -88,13 +88,13 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
   const hasData = expenses.length > 0;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 font-sans">
       {/* Donut Chart */}
       <div className="p-6 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E] flex flex-col justify-between">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <PieIcon className="w-4 h-4 text-[#706E6B] dark:text-[#A1A1AA]" />
-            <h3 className="font-serif text-lg font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <h3 className="text-lg font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
               Category Allocation
             </h3>
           </div>
@@ -104,7 +104,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
         </div>
 
         {!hasData ? (
-          <div className="h-52 flex items-center justify-center text-xs text-[#706E6B] dark:text-[#A1A1AA]">
+          <div className="h-52 flex items-center justify-center text-xs font-medium text-[#706E6B] dark:text-[#A1A1AA]">
             No category data to display
           </div>
         ) : (
@@ -124,7 +124,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                   {pieData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={WARM_MINIMALIST_COLORS[index % WARM_MINIMALIST_COLORS.length]}
+                      fill={BUSINESS_MINIMALIST_COLORS[index % BUSINESS_MINIMALIST_COLORS.length]}
                     />
                   ))}
                 </Pie>
@@ -162,7 +162,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                   className="w-2 h-2 rounded-full"
                   style={{
                     backgroundColor:
-                      WARM_MINIMALIST_COLORS[idx % WARM_MINIMALIST_COLORS.length],
+                      BUSINESS_MINIMALIST_COLORS[idx % BUSINESS_MINIMALIST_COLORS.length],
                   }}
                 />
                 <span>{entry.name}</span>
@@ -177,7 +177,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#706E6B] dark:text-[#A1A1AA]" />
-            <h3 className="font-serif text-lg font-bold text-[#1A1A1A] dark:text-[#F4F4F5]">
+            <h3 className="text-lg font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
               Spending Velocity
             </h3>
           </div>
@@ -187,7 +187,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
         </div>
 
         {!hasData ? (
-          <div className="h-52 flex items-center justify-center text-xs text-[#706E6B] dark:text-[#A1A1AA]">
+          <div className="h-52 flex items-center justify-center text-xs font-medium text-[#706E6B] dark:text-[#A1A1AA]">
             No spending trends to display
           </div>
         ) : (
@@ -245,7 +245,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
           </div>
         )}
 
-        <div className="mt-4 pt-3 border-t border-[#EAE8E3]/80 dark:border-[#2D2D2D]/80 flex items-center justify-between text-xs text-[#706E6B] dark:text-[#A1A1AA]">
+        <div className="mt-4 pt-3 border-t border-[#EAE8E3]/80 dark:border-[#2D2D2D]/80 flex items-center justify-between text-xs font-medium text-[#706E6B] dark:text-[#A1A1AA]">
           <span>Smooth Monotone Trend</span>
           <span className="font-semibold text-[#18181B] dark:text-[#F4F4F5]">
             Daily Spending
