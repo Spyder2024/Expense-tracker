@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Navigation } from "@/components/Navigation";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Student Money Tracker",
@@ -38,6 +39,9 @@ export default function RootLayout({
           {/* Responsive Navigation Component (Mobile Bottom Bar + Desktop Left Sidebar) */}
           <Navigation />
         </ThemeProvider>
+
+        {/* Vercel Web Analytics */}
+        <Analytics />
       </body>
     </html>
   );
