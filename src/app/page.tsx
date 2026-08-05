@@ -48,6 +48,7 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [balanceRefreshTrigger, setBalanceRefreshTrigger] = useState(0);
 
   // Net debts for Net Worth calculation
   const [netOwedToMe, setNetOwedToMe] = useState(0);
@@ -131,7 +132,8 @@ export default function HomePage() {
       return;
     }
 
-    const { data, error } = await supabase
+    // STEP 1: Insert into personal_expenses
+    const { data: insertedExpense, error: expError } = await supabase
       .from("personal_expenses")
       .insert({
         user_id: user.id,
@@ -144,17 +146,47 @@ export default function HomePage() {
       .select()
       .single();
 
-    if (error) {
-      setErrorMsg(error.message);
-    } else if (data) {
-      setExpenses((prev) => [data as PersonalExpense, ...prev]);
-      setAmount("");
-      setCategory("Food & Dining");
-      setAccountType("Bank");
-      setDescription("");
-      setDate(new Date().toISOString().split("T")[0]);
-      setIsModalOpen(false);
+    if (expError) {
+      setErrorMsg(`Failed to record expense: ${expError.message}`);
+      setSubmitting(false);
+      return;
     }
+
+    // STEP 2: Deduct expense amount from user_accounts balance
+    try {
+      const { data: accData } = await supabase
+        .from("user_accounts")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const currentCash = accData ? Number(accData.cash_balance) : 1500;
+      const currentBank = accData ? Number(accData.bank_balance) : 12000;
+
+      const newCash = accountType === "Cash" ? Math.max(0, currentCash - parsedAmount) : currentCash;
+      const newBank = accountType === "Bank" ? Math.max(0, currentBank - parsedAmount) : currentBank;
+
+      await supabase.from("user_accounts").upsert({
+        user_id: user.id,
+        cash_balance: newCash,
+        bank_balance: newBank,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (accErr) {
+      console.error("Failed to update account balance:", accErr);
+    }
+
+    // STEP 3: Update local UI states immediately
+    setExpenses((prev) => [insertedExpense as PersonalExpense, ...prev]);
+    setBalanceRefreshTrigger((prev) => prev + 1);
+
+    // Reset Form
+    setAmount("");
+    setCategory("Food & Dining");
+    setAccountType("Bank");
+    setDescription("");
+    setDate(new Date().toISOString().split("T")[0]);
+    setIsModalOpen(false);
     setSubmitting(false);
   }
 
@@ -167,6 +199,7 @@ export default function HomePage() {
 
     if (!error) {
       setExpenses((prev) => prev.filter((item) => item.id !== id));
+      setBalanceRefreshTrigger((prev) => prev + 1);
     }
     setDeletingId(null);
   }
@@ -185,7 +218,11 @@ export default function HomePage() {
   return (
     <div className="space-y-6 font-sans">
       {/* Feature Widget: Account Balances */}
-      <AccountSummaryCard netOwedToMe={netOwedToMe} netIOwe={netIOwe} />
+      <AccountSummaryCard
+        netOwedToMe={netOwedToMe}
+        netIOwe={netIOwe}
+        refreshTrigger={balanceRefreshTrigger}
+      />
 
       {/* Hero Section: Total Spent This Month */}
       <div className="p-6 md:p-8 rounded-2xl border border-[#EAE8E3] dark:border-[#2D2D2D] bg-white dark:bg-[#1E1E1E]">
@@ -411,7 +448,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Description Field (NEW) */}
+              {/* Description Field */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#706E6B] dark:text-[#A1A1AA] mb-1">
                   Description / Note (Optional)

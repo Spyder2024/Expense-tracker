@@ -13,6 +13,8 @@ import {
   Loader2,
   User as UserIcon,
   FileText,
+  Wallet,
+  Building2,
 } from "lucide-react";
 
 interface UserProfile {
@@ -40,7 +42,7 @@ export default function DebtsPage() {
   const [activeTab, setActiveTab] = useState<"owed_to_me" | "i_owe">("owed_to_me");
   const [showSettled, setShowSettled] = useState(false);
 
-  // Modal State
+  // Add Debt Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [debtType, setDebtType] = useState<"lender" | "borrower">("lender");
   const [userQuery, setUserQuery] = useState("");
@@ -51,6 +53,10 @@ export default function DebtsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [searching, setSearching] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Settle Up Modal State
+  const [settleModalDebt, setSettleModalDebt] = useState<DebtItem | null>(null);
+  const [settleAccountType, setSettleAccountType] = useState<"Cash" | "Bank">("Bank");
   const [settlingId, setSettlingId] = useState<string | null>(null);
 
   const supabase = createClient();
@@ -191,21 +197,71 @@ export default function DebtsPage() {
     setSubmitting(false);
   }
 
-  async function handleSettleUp(debtId: string) {
+  async function handleConfirmSettleUp() {
+    if (!settleModalDebt || !currentUser) return;
+
+    const debtId = settleModalDebt.id;
+    const isLender = settleModalDebt.lender_id === currentUser.id;
+    const debtAmount = Number(settleModalDebt.amount);
+
     setSettlingId(debtId);
-    const { error } = await supabase
+
+    // 1. Update status in Debts table
+    const { error: debtErr } = await supabase
       .from("debts")
       .update({ status: "Settled" })
       .eq("id", debtId);
 
-    if (!error) {
-      setDebts((prev) =>
-        prev.map((item) =>
-          item.id === debtId ? { ...item, status: "Settled" } : item
-        )
-      );
+    if (debtErr) {
+      console.error("Error settling debt:", debtErr);
+      setSettlingId(null);
+      setSettleModalDebt(null);
+      return;
     }
+
+    // 2. Adjust User_Accounts balance
+    try {
+      const { data: accData } = await supabase
+        .from("user_accounts")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+      const currentCash = accData ? Number(accData.cash_balance) : 1500;
+      const currentBank = accData ? Number(accData.bank_balance) : 12000;
+
+      let newCash = currentCash;
+      let newBank = currentBank;
+
+      if (isLender) {
+        // Lender received repayment -> increment account balance
+        if (settleAccountType === "Cash") newCash += debtAmount;
+        else newBank += debtAmount;
+      } else {
+        // Borrower paid off debt -> decrement account balance
+        if (settleAccountType === "Cash") newCash = Math.max(0, newCash - debtAmount);
+        else newBank = Math.max(0, newBank - debtAmount);
+      }
+
+      await supabase.from("user_accounts").upsert({
+        user_id: currentUser.id,
+        cash_balance: newCash,
+        bank_balance: newBank,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (accErr) {
+      console.error("Error updating user balance on settlement:", accErr);
+    }
+
+    // 3. Update UI state
+    setDebts((prev) =>
+      prev.map((item) =>
+        item.id === debtId ? { ...item, status: "Settled" } : item
+      )
+    );
+
     setSettlingId(null);
+    setSettleModalDebt(null);
   }
 
   function resetModalForm() {
@@ -407,10 +463,10 @@ export default function DebtsPage() {
                       </span>
                     </div>
 
-                    {/* Settle Up Button */}
+                    {/* Settle Up Trigger Button */}
                     {!isSettled && (
                       <button
-                        onClick={() => handleSettleUp(debt.id)}
+                        onClick={() => setSettleModalDebt(debt)}
                         disabled={settlingId === debt.id}
                         className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-colors flex items-center gap-1.5 disabled:opacity-50 min-h-[44px] shrink-0"
                       >
@@ -429,6 +485,94 @@ export default function DebtsPage() {
           </div>
         )}
       </div>
+
+      {/* Settle Up Account Selection Modal */}
+      {settleModalDebt && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white dark:bg-[#1E1E1E] border border-[#EAE8E3] dark:border-[#2D2D2D] rounded-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-[#EAE8E3] dark:border-[#2D2D2D] pb-3">
+              <h3 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
+                Confirm Debt Settlement
+              </h3>
+              <button
+                onClick={() => setSettleModalDebt(null)}
+                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-sm text-[#706E6B] dark:text-[#A1A1AA]">
+                {settleModalDebt.lender_id === currentUser?.id
+                  ? `Receiving settlement of ₹${Number(settleModalDebt.amount).toFixed(2)} from ${
+                      settleModalDebt.borrower?.name || settleModalDebt.borrower?.email || "peer"
+                    }.`
+                  : `Paying settlement of ₹${Number(settleModalDebt.amount).toFixed(2)} to ${
+                      settleModalDebt.lender?.name || settleModalDebt.lender?.email || "peer"
+                    }.`}
+              </p>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#706E6B] dark:text-[#A1A1AA] mb-2">
+                  Select Settlement Account
+                </label>
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#FAF9F6] dark:bg-[#121212] border border-[#EAE8E3] dark:border-[#2D2D2D]">
+                  <button
+                    type="button"
+                    onClick={() => setSettleAccountType("Bank")}
+                    className={`py-2.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                      settleAccountType === "Bank"
+                        ? "bg-white dark:bg-[#1E1E1E] text-[#1A1A1A] dark:text-[#F4F4F5] shadow-xs font-bold"
+                        : "text-[#706E6B] dark:text-[#A1A1AA]"
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>Bank Account</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSettleAccountType("Cash")}
+                    className={`py-2.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                      settleAccountType === "Cash"
+                        ? "bg-white dark:bg-[#1E1E1E] text-[#2E6F40] dark:text-[#4ADE80] shadow-xs font-bold"
+                        : "text-[#706E6B] dark:text-[#A1A1AA]"
+                    }`}
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Liquid Cash</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setSettleModalDebt(null)}
+                className="px-4 py-2.5 text-sm font-medium rounded-xl text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSettleUp}
+                disabled={settlingId === settleModalDebt.id}
+                className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
+              >
+                {settlingId === settleModalDebt.id ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Settling...</span>
+                  </>
+                ) : (
+                  <span>Confirm Settlement</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Debt Modal */}
       {isModalOpen && (

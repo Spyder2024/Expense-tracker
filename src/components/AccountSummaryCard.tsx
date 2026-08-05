@@ -13,11 +13,13 @@ import {
 interface AccountSummaryCardProps {
   netOwedToMe?: number;
   netIOwe?: number;
+  refreshTrigger?: number;
 }
 
 export function AccountSummaryCard({
   netOwedToMe = 0,
   netIOwe = 0,
+  refreshTrigger = 0,
 }: AccountSummaryCardProps) {
   const [cashBalance, setCashBalance] = useState<number>(1500);
   const [bankBalance, setBankBalance] = useState<number>(12000);
@@ -33,7 +35,7 @@ export function AccountSummaryCard({
 
   useEffect(() => {
     fetchBalances();
-  }, []);
+  }, [refreshTrigger]);
 
   async function fetchBalances() {
     setLoading(true);
@@ -80,7 +82,7 @@ export function AccountSummaryCard({
           updated_at: new Date().toISOString(),
         });
       } catch {
-        // Fallback
+        // Fallback update local state
       }
     }
 
