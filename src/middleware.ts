@@ -6,10 +6,16 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xxxmdaazslzgefwydlpg.supabase.co",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_m421-D7S-il68iR3TCMO9w_oRX8092G",
-    {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xxxmdaazslzgefwydlpg.supabase.co";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_m421-D7S-il68iR3TCMO9w_oRX8092G";
+
+  // If the Supabase URL is still a dummy placeholder or missing, skip network calls to prevent 504 MIDDLEWARE_INVOCATION_TIMEOUT
+  if (!supabaseUrl || supabaseUrl.includes("xxxmdaazslzgefwydlpg") || !supabaseUrl.startsWith("http")) {
+    return supabaseResponse;
+  }
+
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -26,28 +32,35 @@ export async function middleware(request: NextRequest) {
           );
         },
       },
+    });
+
+    // Add a strict 3-second timeout safety guard so middleware never hangs Vercel edge functions
+    const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
+      setTimeout(() => resolve({ data: { user: null } }), 3000)
+    );
+
+    const authPromise = supabase.auth.getUser();
+    const { data } = await Promise.race([authPromise, timeoutPromise]);
+    const user = data?.user;
+
+    const { pathname } = request.nextUrl;
+    const isAuthPage = pathname.startsWith("/login");
+
+    // Redirect unauthenticated users to /login
+    if (!user && !isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
     }
-  );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
-  const isAuthPage = pathname.startsWith("/login");
-
-  // Redirect unauthenticated users to /login
-  if (!user && !isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect authenticated users away from /login to /
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+    // Redirect authenticated users away from /login to /
+    if (user && isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+  } catch (error) {
+    console.error("Middleware auth check failed:", error);
   }
 
   return supabaseResponse;
