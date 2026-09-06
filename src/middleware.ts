@@ -1,21 +1,22 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getSupabaseEnv } from "@/lib/supabase/config";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  let response = NextResponse.next({
     request,
   });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xxxmdaazslzgefwydlpg.supabase.co";
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_m421-D7S-il68iR3TCMO9w_oRX8092G";
+  const env = getSupabaseEnv();
 
-  // If the Supabase URL is still a dummy placeholder or missing, skip network calls to prevent 504 MIDDLEWARE_INVOCATION_TIMEOUT
-  if (!supabaseUrl || supabaseUrl.includes("xxxmdaazslzgefwydlpg") || !supabaseUrl.startsWith("http")) {
-    return supabaseResponse;
+  // If Supabase environment is not configured, skip server-side auth checking in middleware
+  // to avoid Vercel 504 Edge Timeout errors.
+  if (!env.isConfigured) {
+    return response;
   }
 
   try {
-    const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    const supabase = createServerClient(env.url, env.key, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -24,19 +25,19 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({
+          response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            response.cookies.set(name, value, options)
           );
         },
       },
     });
 
-    // Add a strict 3-second timeout safety guard so middleware never hangs Vercel edge functions
+    // Guard with a 2-second timeout to guarantee Edge Middleware responsiveness
     const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { user: null } }), 3000)
+      setTimeout(() => resolve({ data: { user: null } }), 2000)
     );
 
     const authPromise = supabase.auth.getUser();
@@ -60,14 +61,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   } catch (error) {
-    console.error("Middleware auth check failed:", error);
+    console.error("Middleware auth check failed silently:", error);
   }
 
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
