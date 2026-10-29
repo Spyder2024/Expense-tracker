@@ -204,6 +204,13 @@ export default function DebtsPage() {
     const isLender = settleModalDebt.lender_id === currentUser.id;
     const debtAmount = Number(settleModalDebt.amount);
 
+    // Enforce security authorization: only the creditor/lender can confirm receipt of repayment
+    if (!isLender) {
+      setErrorMsg("Only the creditor/lender can confirm receipt of repayment.");
+      setSettleModalDebt(null);
+      return;
+    }
+
     setSettlingId(debtId);
 
     // 1. Update status in Debts table
@@ -214,12 +221,13 @@ export default function DebtsPage() {
 
     if (debtErr) {
       console.error("Error settling debt:", debtErr);
+      setErrorMsg(debtErr.message || "Failed to settle debt.");
       setSettlingId(null);
       setSettleModalDebt(null);
       return;
     }
 
-    // 2. Adjust User_Accounts balance
+    // 2. Adjust User_Accounts balance (creditor deposits repayment)
     try {
       const { data: accData } = await supabase
         .from("user_accounts")
@@ -233,15 +241,9 @@ export default function DebtsPage() {
       let newCash = currentCash;
       let newBank = currentBank;
 
-      if (isLender) {
-        // Lender received repayment -> increment account balance
-        if (settleAccountType === "Cash") newCash += debtAmount;
-        else newBank += debtAmount;
-      } else {
-        // Borrower paid off debt -> decrement account balance
-        if (settleAccountType === "Cash") newCash = Math.max(0, newCash - debtAmount);
-        else newBank = Math.max(0, newBank - debtAmount);
-      }
+      // Lender received repayment -> increment account balance
+      if (settleAccountType === "Cash") newCash += debtAmount;
+      else newBank += debtAmount;
 
       await supabase.from("user_accounts").upsert({
         user_id: currentUser.id,
@@ -463,20 +465,27 @@ export default function DebtsPage() {
                       </span>
                     </div>
 
-                    {/* Settle Up Trigger Button */}
+                    {/* Settle Up Action: Restricted to Creditor/Lender */}
                     {!isSettled && (
-                      <button
-                        onClick={() => setSettleModalDebt(debt)}
-                        disabled={settlingId === debt.id}
-                        className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-colors flex items-center gap-1.5 disabled:opacity-50 min-h-[44px] shrink-0"
-                      >
-                        {settlingId === debt.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                        )}
-                        <span>Settle Up</span>
-                      </button>
+                      isLender ? (
+                        <button
+                          onClick={() => setSettleModalDebt(debt)}
+                          disabled={settlingId === debt.id}
+                          className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-colors flex items-center gap-1.5 disabled:opacity-50 min-h-[44px] shrink-0"
+                          title="Confirm repayment received from borrower"
+                        >
+                          {settlingId === debt.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                          )}
+                          <span>Confirm Received</span>
+                        </button>
+                      ) : (
+                        <span className="text-[11px] font-medium text-[#706E6B] dark:text-[#A1A1AA] bg-[#FAF9F6] dark:bg-[#121212] border border-[#EAE8E3] dark:border-[#2D2D2D] px-2.5 py-1.5 rounded-lg shrink-0">
+                          Awaiting Lender Confirmation
+                        </span>
+                      )
                     )}
                   </div>
                 </div>
@@ -492,7 +501,7 @@ export default function DebtsPage() {
           <div className="w-full max-w-md bg-white dark:bg-[#1E1E1E] border border-[#EAE8E3] dark:border-[#2D2D2D] rounded-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#EAE8E3] dark:border-[#2D2D2D] pb-3">
               <h3 className="text-xl font-semibold tracking-tight text-[#1A1A1A] dark:text-[#F4F4F5]">
-                Confirm Debt Settlement
+                Confirm Repayment Received
               </h3>
               <button
                 onClick={() => setSettleModalDebt(null)}
@@ -504,13 +513,11 @@ export default function DebtsPage() {
 
             <div className="space-y-3">
               <p className="text-sm text-[#706E6B] dark:text-[#A1A1AA]">
-                {settleModalDebt.lender_id === currentUser?.id
-                  ? `Receiving settlement of ₹${Number(settleModalDebt.amount).toFixed(2)} from ${
-                      settleModalDebt.borrower?.name || settleModalDebt.borrower?.email || "peer"
-                    }.`
-                  : `Paying settlement of ₹${Number(settleModalDebt.amount).toFixed(2)} to ${
-                      settleModalDebt.lender?.name || settleModalDebt.lender?.email || "peer"
-                    }.`}
+                Receiving repayment of <span className="font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">₹{Number(settleModalDebt.amount).toFixed(2)}</span> from{" "}
+                <span className="font-semibold text-[#1A1A1A] dark:text-[#F4F4F5]">
+                  {settleModalDebt.borrower?.name || settleModalDebt.borrower?.email || "peer"}
+                </span>
+                . Select which account to deposit the funds into:
               </p>
 
               <div>

@@ -7,11 +7,18 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  const { pathname } = request.nextUrl;
+  const isAuthPage = pathname.startsWith("/login");
+
   const env = getSupabaseEnv();
 
-  // If Supabase environment is not configured, skip server-side auth checking in middleware
-  // to avoid Vercel 504 Edge Timeout errors.
+  // If Supabase environment is not configured, fail closed on protected routes
   if (!env.isConfigured) {
+    if (!isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
     return response;
   }
 
@@ -44,9 +51,6 @@ export async function middleware(request: NextRequest) {
     const { data } = await Promise.race([authPromise, timeoutPromise]);
     const user = data?.user;
 
-    const { pathname } = request.nextUrl;
-    const isAuthPage = pathname.startsWith("/login");
-
     // Redirect unauthenticated users to /login
     if (!user && !isAuthPage) {
       const url = request.nextUrl.clone();
@@ -61,7 +65,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   } catch (error) {
-    console.error("Middleware auth check failed silently:", error);
+    console.error("Middleware auth check failed:", error);
+    // Fail closed: redirect unauthenticated requests on protected routes to /login
+    if (!isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
