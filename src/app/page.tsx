@@ -356,7 +356,8 @@ export default function HomePage() {
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close dialog"
+                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#18181B] dark:focus-visible:ring-[#F4F4F5] focus-visible:outline-hidden"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   PieChart,
   Pie,
@@ -28,21 +29,37 @@ interface ExpenseDashboardChartsProps {
   expenses: PersonalExpense[];
 }
 
-const BUSINESS_MINIMALIST_COLORS = [
+const BUSINESS_MINIMALIST_COLORS_LIGHT = [
   "#18181B", // Soft Obsidian
   "#2E6F40", // Forest Olive
   "#706E6B", // Warm Gray
   "#9E2A2B", // Deep Crimson
-  "#3F3F46", // Dark Zinc
+  "#52525B", // Mid Zinc
   "#A1A1AA", // Light Ash
+];
+
+const BUSINESS_MINIMALIST_COLORS_DARK = [
+  "#F4F4F5", // Crisp Ash
+  "#4ADE80", // Light Olive
+  "#A1A1AA", // Warm Muted
+  "#F87171", // Coral Crimson
+  "#71717A", // Zinc
+  "#E4E4E7", // Soft Light
 ];
 
 export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps) {
   const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+  const palette = isDark ? BUSINESS_MINIMALIST_COLORS_DARK : BUSINESS_MINIMALIST_COLORS_LIGHT;
+  const strokeColor = isDark ? "#F4F4F5" : "#18181B";
+  const tickColor = isDark ? "#A1A1AA" : "#706E6B";
+  const gridColor = isDark ? "#2D2D2D" : "#EAE8E3";
 
   if (!mounted) {
     return (
@@ -124,7 +141,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                   {pieData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={BUSINESS_MINIMALIST_COLORS[index % BUSINESS_MINIMALIST_COLORS.length]}
+                      fill={palette[index % palette.length]}
                     />
                   ))}
                 </Pie>
@@ -161,8 +178,7 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                 <span
                   className="w-2 h-2 rounded-full"
                   style={{
-                    backgroundColor:
-                      BUSINESS_MINIMALIST_COLORS[idx % BUSINESS_MINIMALIST_COLORS.length],
+                    backgroundColor: palette[idx % palette.length],
                   }}
                 />
                 <span>{entry.name}</span>
@@ -200,19 +216,18 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#EAE8E3"
-                  className="dark:stroke-[#2D2D2D]"
+                  stroke={gridColor}
                 />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 10, fill: "#706E6B" }}
+                  tick={{ fontSize: 10, fill: tickColor }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 10, fill: "#706E6B" }}
+                  tick={{ fontSize: 10, fill: tickColor }}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
@@ -235,9 +250,9 @@ export function ExpenseDashboardCharts({ expenses }: ExpenseDashboardChartsProps
                 <Line
                   type="monotone"
                   dataKey="amount"
-                  stroke="#18181B"
+                  stroke={strokeColor}
                   strokeWidth={2.5}
-                  dot={{ fill: "#18181B", r: 3 }}
+                  dot={{ fill: strokeColor, r: 3 }}
                   activeDot={{ r: 5 }}
                 />
               </LineChart>

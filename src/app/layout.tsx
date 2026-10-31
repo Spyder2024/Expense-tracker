@@ -17,12 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[#FAF9F6] dark:bg-[#121212] text-[#1A1A1A] dark:text-[#F4F4F5] min-h-screen flex flex-col font-sans antialiased">
+      <body className="bg-canvas text-fg-primary min-h-screen flex flex-col font-sans antialiased">
         <ThemeProvider>
           {/* Mobile Top Header (< 768px) */}
           <header className="md:hidden sticky top-0 z-40 bg-white/90 dark:bg-[#1E1E1E]/90 backdrop-blur-xs border-b border-[#EAE8E3] dark:border-[#2D2D2D] px-4 py-3">
             <div className="flex items-center justify-between">
-              <h1 className="font-serif text-lg font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight">
+              <h1 className="font-sans text-lg font-bold text-[#1A1A1A] dark:text-[#F4F4F5] tracking-tight">
                 Student Money Tracker
               </h1>
               <ThemeToggle />

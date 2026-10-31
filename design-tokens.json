@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json.schemastore.org/design-tokens.json",
+  "name": "Student Money Tracker Design System",
+  "version": "1.0.0",
+  "description": "Business Minimalist Warm Off-White design tokens for financial dashboard and peer debt ledger",
+  "color": {
+    "light": {
+      "canvas": { "value": "#FAF9F6", "type": "color", "description": "Warm off-white base application canvas" },
+      "surface": { "value": "#FFFFFF", "type": "color", "description": "Crisp white card and modal surface" },
+      "border": {
+        "subtle": { "value": "#EAE8E3", "type": "color", "description": "Delicate 1px dividing border" },
+        "hover": { "value": "#D5D3CC", "type": "color", "description": "Hover state border tone" }
+      },
+      "fg": {
+        "primary": { "value": "#1A1A1A", "type": "color", "description": "Primary high-contrast text" },
+        "muted": { "value": "#706E6B", "type": "color", "description": "Secondary metadata and caption label" }
+      },
+      "brand": {
+        "accent": { "value": "#18181B", "type": "color", "description": "Soft obsidian primary button/accent" },
+        "accentHover": { "value": "#27272A", "type": "color", "description": "Hover state for obsidian action" },
+        "accentFg": { "value": "#FFFFFF", "type": "color", "description": "Foreground on obsidian" }
+      },
+      "status": {
+        "positive": { "value": "#2E6F40", "type": "color", "description": "Forest olive green for income and receivables" },
+        "positiveHover": { "value": "#235832", "type": "color", "description": "Dark forest olive on hover" },
+        "positiveFg": { "value": "#FFFFFF", "type": "color", "description": "Foreground on positive button" },
+        "negative": { "value": "#9E2A2B", "type": "color", "description": "Deep crimson red for expenses and payables" },
+        "negativeHover": { "value": "#7F2223", "type": "color", "description": "Dark crimson on hover" },
+        "negativeFg": { "value": "#FFFFFF", "type": "color", "description": "Foreground on negative button" }
+      }
+    },
+    "dark": {
+      "canvas": { "value": "#121212", "type": "color", "description": "Dark graphite base background" },
+      "surface": { "value": "#1E1E1E", "type": "color", "description": "Elevated card surface in dark mode" },
+      "border": {
+        "subtle": { "value": "#2D2D2D", "type": "color", "description": "Dark muted 1px border" },
+        "hover": { "value": "#3E3E3E", "type": "color", "description": "Hover state border in dark mode" }
+      },
+      "fg": {
+        "primary": { "value": "#F4F4F5", "type": "color", "description": "Crisp off-white primary text" },
+        "muted": { "value": "#A1A1AA", "type": "color", "description": "Secondary muted text in dark mode" }
+      },
+      "brand": {
+        "accent": { "value": "#F4F4F5", "type": "color", "description": "Bright crisp button background in dark mode" },
+        "accentHover": { "value": "#E4E4E7", "type": "color", "description": "Hover state for dark mode accent" },
+        "accentFg": { "value": "#121212", "type": "color", "description": "Dark text on light button in dark mode" }
+      },
+      "status": {
+        "positive": { "value": "#4ADE80", "type": "color", "description": "Emerald/mint green for dark mode receivables" },
+        "positiveHover": { "value": "#22C55E", "type": "color", "description": "Hover green in dark mode" },
+        "positiveFg": { "value": "#121212", "type": "color", "description": "Dark text on bright green" },
+        "negative": { "value": "#F87171", "type": "color", "description": "Coral red for dark mode expenses" },
+        "negativeHover": { "value": "#EF4444", "type": "color", "description": "Hover red in dark mode" },
+        "negativeFg": { "value": "#121212", "type": "color", "description": "Dark text on coral red" }
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": { "value": "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+      "mono": { "value": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }
+    },
+    "fontSize": {
+      "2xs": { "value": "10px", "lineHeight": "14px" },
+      "xs": { "value": "12px", "lineHeight": "16px" },
+      "sm": { "value": "14px", "lineHeight": "20px" },
+      "base": { "value": "16px", "lineHeight": "24px" },
+      "lg": { "value": "18px", "lineHeight": "28px" },
+      "xl": { "value": "20px", "lineHeight": "28px" },
+      "2xl": { "value": "24px", "lineHeight": "32px" },
+      "3xl": { "value": "30px", "lineHeight": "36px" },
+      "4xl": { "value": "36px", "lineHeight": "40px" }
+    },
+    "fontWeight": {
+      "normal": { "value": "400" },
+      "medium": { "value": "500" },
+      "semibold": { "value": "600" },
+      "bold": { "value": "700" }
+    },
+    "letterSpacing": {
+      "tight": { "value": "-0.02em" },
+      "normal": { "value": "0em" },
+      "wider": { "value": "0.05em" },
+      "widest": { "value": "0.1em" }
+    }
+  },
+  "spacing": {
+    "1": { "value": "4px" },
+    "2": { "value": "8px" },
+    "3": { "value": "12px" },
+    "4": { "value": "16px" },
+    "5": { "value": "20px" },
+    "6": { "value": "24px" },
+    "8": { "value": "32px" },
+    "12": { "value": "48px" },
+    "16": { "value": "64px" }
+  },
+  "borderRadius": {
+    "sm": { "value": "6px" },
+    "md": { "value": "8px" },
+    "lg": { "value": "10px" },
+    "xl": { "value": "12px", "description": "Standard for buttons, chips, and small cards" },
+    "2xl": { "value": "16px", "description": "Standard for outer container surfaces and modals" },
+    "full": { "value": "9999px", "description": "Avatars, status pills, and circular indicators" }
+  },
+  "accessibility": {
+    "minTouchTarget": { "value": "44px" },
+    "focusRing": { "value": "2px solid var(--fg-primary)", "offset": "2px" }
+  }
+}

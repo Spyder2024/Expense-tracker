@@ -471,7 +471,7 @@ export default function DebtsPage() {
                         <button
                           onClick={() => setSettleModalDebt(debt)}
                           disabled={settlingId === debt.id}
-                          className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-colors flex items-center gap-1.5 disabled:opacity-50 min-h-[44px] shrink-0"
+                          className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#22C55E] text-white dark:text-[#121212] transition-colors flex items-center gap-1.5 disabled:opacity-50 min-h-[44px] shrink-0 focus-visible:ring-2 focus-visible:ring-[#2E6F40] dark:focus-visible:ring-[#4ADE80] focus-visible:outline-hidden"
                           title="Confirm repayment received from borrower"
                         >
                           {settlingId === debt.id ? (
@@ -505,7 +505,8 @@ export default function DebtsPage() {
               </h3>
               <button
                 onClick={() => setSettleModalDebt(null)}
-                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close dialog"
+                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#18181B] dark:focus-visible:ring-[#F4F4F5] focus-visible:outline-hidden"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -565,7 +566,7 @@ export default function DebtsPage() {
                 type="button"
                 onClick={handleConfirmSettleUp}
                 disabled={settlingId === settleModalDebt.id}
-                className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#38BDF8] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px]"
+                className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#2E6F40] hover:bg-[#235832] dark:bg-[#4ADE80] dark:hover:bg-[#22C55E] text-white dark:text-[#121212] transition-all flex items-center gap-2 disabled:opacity-50 min-h-[44px] focus-visible:ring-2 focus-visible:ring-[#2E6F40] dark:focus-visible:ring-[#4ADE80] focus-visible:outline-hidden"
               >
                 {settlingId === settleModalDebt.id ? (
                   <>
@@ -594,7 +595,8 @@ export default function DebtsPage() {
                   setIsModalOpen(false);
                   resetModalForm();
                 }}
-                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close dialog"
+                className="p-2 rounded-lg text-[#706E6B] dark:text-[#A1A1AA] hover:bg-[#FAF9F6] dark:hover:bg-[#121212] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#18181B] dark:focus-visible:ring-[#F4F4F5] focus-visible:outline-hidden"
               >
                 <X className="w-5 h-5" />
               </button>
